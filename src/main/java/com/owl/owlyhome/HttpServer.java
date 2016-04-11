@@ -48,12 +48,12 @@ public class HttpServer extends HttpApp {
     private ActorRef videoActor = null;
 
     /////////////////////PI
-    //private String ROOT_FOLDER = "/mnt/usb";
-    private String ROOT_FOLDER = "/Users/dstoner/PersonalRepos/owl-home";
+    private String ROOT_FOLDER = "/mnt/usb";
+    //private String ROOT_FOLDER = "/Users/dstoner/PersonalRepos/owl-home";
     /////////////////////LOCAL
     //    private String ROOT_FOLDER = "D:\\Download";
     private String IP_ADDRESS;
-    private int PORT = 8080;
+    private int PORT = 80;
 
     HttpServer(ActorSystem system) {
         this.system = system;
