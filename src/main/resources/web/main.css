@@ -1,0 +1,13 @@
+.BlankApp .text-capitalize {
+    text-transform: capitalize; }
+.BlankApp .md-fab:hover, .fabSpeedDialdemoBasicUsage .md-fab.md-focused {
+    background-color: #000 !important; }
+.BlankApp p.note {
+    font-size: 1.2rem; }
+.BlankApp .lock-size {
+    min-width: 300px;
+    min-height: 300px;
+    width: 300px;
+    height: 300px;
+    margin-left: auto;
+    margin-right: auto; }
