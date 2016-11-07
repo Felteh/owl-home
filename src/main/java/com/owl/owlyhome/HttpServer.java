@@ -13,9 +13,11 @@ import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.Handler;
 import akka.http.javadsl.server.Handler1;
 import akka.http.javadsl.server.HttpApp;
+import akka.http.javadsl.server.RequestContext;
 import akka.http.javadsl.server.RequestVal;
 import static akka.http.javadsl.server.RequestVals.entityAs;
 import akka.http.javadsl.server.Route;
+import akka.http.javadsl.server.RouteResult;
 import akka.http.javadsl.server.values.PathMatcher;
 import akka.http.javadsl.server.values.PathMatchers;
 import akka.pattern.Patterns;
@@ -53,9 +55,9 @@ public class HttpServer extends HttpApp {
 
     /////////////////////PI
     private String ROOT_FOLDER = "/mnt/usb";
-    //private String ROOT_FOLDER = "/Users/dstoner/PersonalRepos/owl-home";
+//    private String ROOT_FOLDER = "/Users/dstoner/PersonalRepos/owl-home";
     /////////////////////LOCAL
-    //    private String ROOT_FOLDER = "D:\\Download";
+//        private String ROOT_FOLDER = "D:\\Download";
     private String IP_ADDRESS;
     private int PORT = 80;
 
@@ -189,7 +191,7 @@ public class HttpServer extends HttpApp {
                 get(
                         path("videos")
                         .route(
-                                complete(getFiles())
+                                handleWith(this::getFiles)
                         )
                 ),
                 post(
@@ -222,12 +224,12 @@ public class HttpServer extends HttpApp {
         );
     }
 
-    private String getFiles() {
+    private RouteResult getFiles(RequestContext ctx) {
         try {
             List<Video> files = walk(
                     ROOT_FOLDER,
                     new ArrayList<>());
-            return mapper.writeValueAsString(files);
+            return ctx.complete(mapper.writeValueAsString(files));
         } catch (JsonProcessingException ex) {
             throw new RuntimeException(ex);
         }
