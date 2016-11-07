@@ -1,4 +1,4 @@
-package com.owl.owlyhome;
+package com.owl.owlyhome.video;
 
 import akka.actor.AbstractActor;
 import akka.actor.Props;
@@ -31,8 +31,8 @@ public class VideoActor extends AbstractActor {
                         (s) -> stop()
                 )
                 .match(
-                        String.class,
-                        (s) -> play(s)
+                        Play.class,
+                        (p) -> play(p)
                 )
                 .matchAny((s) -> System.out.println("Peculiar input:" + s))
                 .build()
@@ -42,9 +42,9 @@ public class VideoActor extends AbstractActor {
     private Process process;
     private Thread processPrinter;
 
-    private void play(String s) throws IOException {
-        System.out.println("Playing path:" + s);
-        ProcessBuilder processBuilder = new java.lang.ProcessBuilder("omxplayer", "-o", "hdmi", s);
+    private void play(Play play) throws IOException {
+        System.out.println("Playing:" + play);
+        ProcessBuilder processBuilder = new java.lang.ProcessBuilder("omxplayer", "-o", play.audio.commandLine, play.filename);
         processBuilder.redirectErrorStream(true); // redirect error stream to output stream
         processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
         System.out.println("Process starting:" + processBuilder.command());

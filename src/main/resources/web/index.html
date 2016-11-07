@@ -29,8 +29,10 @@
             var app = angular.module('BlankApp', ['ngMaterial', 'ngResource']);
 
             app
-                    .controller('CurrentVidCtrl', function ($scope, $mdBottomSheet, $mdToast) {
-                        $scope.showCurrentVideo = function () {
+                    .controller('CurrentVidCtrl', function ($rootScope, $scope, $mdBottomSheet, $mdToast) {
+                        $rootScope.audio = 'local';
+                
+                        $scope.showCurrentVideo = function () {                            
                             $scope.alert = '';
                             $mdBottomSheet.show({
                                 templateUrl: 'bottom-sheet-current-vid-template.html',
@@ -69,12 +71,12 @@
                 };
             });
 
-            app.controller('AllVidCtrl', function ($scope, $resource) {
+            app.controller('AllVidCtrl', function ($rootScope, $scope, $resource) {
                 $resource('/videos').query({}, function (res) {
                     $scope.files = res;
                 });
                 $scope.play = function (path) {
-                    $resource('/play').save(angular.toJson(path), function (res) {
+                    $resource('/play').save(angular.toJson({'filename': path, 'audio': $rootScope.audio}), function (res) {
                         console.log(res);
                     });
                 };
@@ -88,6 +90,16 @@
         <div ng-controller="CurrentVidCtrl as cvid" layout="column" ng-cloak>
             <div class="inset" layout="row" layout-sm="column" layout-align="center">
                 <md-button flex="50" class="md-primary md-raised" ng-click="showCurrentVideo()">Show Current Video</md-button>
+            </div>
+            <div class="inset" layout="row" layout-sm="column" layout-align="center">
+                <md-input-container>
+                    <label>Audio</label>
+                    <md-select ng-model="audio">
+                        <md-option>both</md-option>
+                        <md-option>hdmi</md-option>
+                        <md-option>local</md-option>
+                    </md-select>
+                </md-input-container>
             </div>
         </div>
 

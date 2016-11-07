@@ -1,5 +1,7 @@
 package com.owl.owlyhome;
 
+import com.owl.owlyhome.video.VideoActor;
+import com.owl.owlyhome.video.Video;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import static akka.http.javadsl.marshallers.jackson.Jackson.jsonAs;
@@ -11,6 +13,7 @@ import akka.http.javadsl.model.MediaTypes;
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.Handler;
 import akka.http.javadsl.server.Handler1;
+import akka.http.javadsl.server.Handler2;
 import akka.http.javadsl.server.HttpApp;
 import akka.http.javadsl.server.RequestVal;
 import static akka.http.javadsl.server.RequestVals.entityAs;
@@ -19,6 +22,7 @@ import akka.http.javadsl.server.values.PathMatcher;
 import akka.http.javadsl.server.values.PathMatchers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.owl.owlyhome.video.Play;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
@@ -30,6 +34,9 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.stream.Collectors;
+import static akka.http.javadsl.marshallers.jackson.Jackson.jsonAs;
+import com.owl.owlyhome.video.V1Play;
+import java.util.HashMap;
 
 public class HttpServer extends HttpApp {
 
@@ -101,9 +108,9 @@ public class HttpServer extends HttpApp {
         );
     };
 
-    private final Handler1<String> playHandler = (ctx, videoPath) -> {
-        System.out.println("Request to play videoPath: " + videoPath);
-        videoActor.tell(videoPath, ActorRef.noSender());
+    private final Handler1<V1Play> playHandler = (ctx, request) -> {
+        System.out.println("Request to play videoPath: " + request);
+        videoActor.tell(new Play(request.filename, AudioOption.fromRestApi(request.audio)), ActorRef.noSender());
         return ctx.completeWithStatus(StatusCodes.OK);
     };
 
@@ -125,7 +132,7 @@ public class HttpServer extends HttpApp {
         return ctx.completeWithStatus(StatusCodes.OK);
     };
 
-    private final RequestVal<String> videoParam = entityAs(jsonAs(String.class));
+    private final RequestVal<V1Play> videoParam = entityAs(jsonAs(V1Play.class));
 
     @Override
     public Route createRoute() {

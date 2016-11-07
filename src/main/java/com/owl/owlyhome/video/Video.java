@@ -1,4 +1,4 @@
-package com.owl.owlyhome;
+package com.owl.owlyhome.video;
 
 
 public class Video {
