@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" >
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Angular Material style sheet -->
+        <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc2/angular-material.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="main.css">
+    </head>
+    <body ng-app="BlankApp" ng-cloak>
+        <!--
+          Your HTML content here
+        -->  
+
+        <!-- Angular Material requires Angular.js Libraries -->
+        <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-resource.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-animate.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-aria.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-messages.min.js"></script>
+
+        <!-- Angular Material Library -->
+        <script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc2/angular-material.min.js"></script>
+
+        <!-- Your application bootstrap  -->
+        <script type="text/javascript">
+            /**
+             * You must include the dependency on 'ngMaterial' 
+             */
+            var app = angular.module('BlankApp', ['ngMaterial', 'ngResource']);
+            app
+                    .controller('CurrentVidCtrl', function ($rootScope, $scope, $mdBottomSheet, $mdToast) {
+                        $rootScope.audio ='both';
+                        $scope.showCurrentVideo = function () {
+                            $scope.alert = '';
+                            $mdBottomSheet.show({
+                                templateUrl: 'bottom-sheet-current-vid-template.html',
+                                controller: 'GridBottomSheetCtrl',
+                                clickOutsideToClose: true
+                            })
+                        };
+                    });
+            app.controller('GridBottomSheetCtrl', function ($scope, $mdBottomSheet, $resource, $mdToast) {
+                $scope.items = [
+                    {name: 'Play', icon: 'fa fa-play',
+                        onClick: function () {
+                            $resource('/resume').save({},
+                                    function (res) {
+                                        console.log(res);
+                                    },
+                                    function (res) {
+                                        if (res.status == 400) {
+                                            $mdToast.show(
+                                                    $mdToast.simple()
+                                                    .textContent('Cannot resume - No video paused')
+                                                    .position('top right')
+                                                    .hideDelay(1500)
+                                                    );
+                                        } else {
+                                            $mdToast.show(
+                                                    $mdToast.simple()
+                                                    .textContent('Cannot resume - Status Code:' + res.status)
+                                                    .position('top right')
+                                                    .hideDelay(1500)
+                                                    );
+                                        }
+                                    }
+                            );
+                        }
+                    },
+                    {name: 'Pause', icon: 'fa fa-pause',
+                        onClick: function () {
+                            $resource('/pause').save({},
+                                    function (res) {
+                                        console.log(res);
+                                    },
+                                    function (res) {
+                                        if (res.status == 400) {
+                                            $mdToast.show(
+                                                    $mdToast.simple()
+                                                    .textContent('Cannot pause - No video playing')
+                                                    .position('top right')
+                                                    .hideDelay(1500)
+                                                    );
+                                        } else {
+                                            $mdToast.show(
+                                                    $mdToast.simple()
+                                                    .textContent('Cannot pause - Status Code:' + res.status)
+                                                    .position('top right')
+                                                    .hideDelay(1500)
+                                                    );
+                                        }
+                                    }
+                            );
+                        }
+                    },
+                    {name: 'Stop', icon: 'fa fa-stop',
+                        onClick: function () {
+                            $resource('/stop').save({},
+                                    function (res) {
+                                        console.log(res);
+                                    },
+                                    function (res) {
+                                        if (res.status == 400) {
+                                            $mdToast.show(
+                                                    $mdToast.simple()
+                                                    .textContent('Cannot stop - No video playing')
+                                                    .position('top right')
+                                                    .hideDelay(1500)
+                                                    );
+                                        } else {
+                                            $mdToast.show(
+                                                    $mdToast.simple()
+                                                    .textContent('Cannot stop - Status Code:' + res.status)
+                                                    .position('top right')
+                                                    .hideDelay(1500)
+                                                    );
+                                        }
+                                    }
+                            );
+                        }
+                    }
+                ];
+                $scope.listItemClick = function ($index) {
+                    $scope.items[$index].onClick();
+                };
+            });
+            app.controller('AllVidCtrl', function ($rootScope, $scope, $resource, $mdToast) {
+                $resource('/videos').query({}, function (res) {
+                    $scope.files = res;
+                });
+                $scope.play = function (name, path) {
+                    $resource('/play').save(angular.toJson({'filename':path, 'audio':$rootScope.audio}),
+                            function (res) {
+                                console.log(res);
+                            },
+                            function (res) {
+                                $mdToast.show(
+                                        $mdToast.simple()
+                                        .textContent('Cannot play - Status Code:' + res.status)
+                                        .position('top right')
+                                        .hideDelay(1500)
+                                        );
+                            }
+                    );
+                };
+            });
+            app.factory('Videos', function ($resource) {
+                return $resource('/videos');
+            });
+        </script>
+
+        <div ng-controller="CurrentVidCtrl as cvid" layout="column" ng-cloak>
+            <div class="inset" layout="row" layout-sm="column" layout-align="center">
+                <md-button flex="50" class="md-primary md-raised" ng-click="showCurrentVideo()">Show Current Video</md-button>
+            </div>
+            <div class="inset" layout="row" layout-sm="column" layout-align="center">
+                <md-input-container>
+                    <label>Audio</label>
+                    <md-select ng-model="audio">
+                        <md-option>both</md-option>
+                        <md-option>hdmi</md-option>
+                        <md-option>local</md-option>
+                    </md-select>
+                </md-input-container>
+            </div>
+        </div>
+
+        <div ng-controller="AllVidCtrl as avid" layout="column" ng-cloak>
+            <md-list flex>
+                <md-subheader class="md-no-sticky">All Videos</md-subheader>
+                <md-list-item class="md-3-line" ng-repeat="item in files" ng-click="play(item.name, item.path)">
+                    <div class="md-list-item-text" layout="column">
+                        <h3>{{ item.name}}</h3>
+                        <h4>{{ item.length}}mb</h4>
+                        <p>{{ item.path}}</p>
+                    </div>
+                    <md-divider ng-if="!$last"></md-divider>
+                </md-list-item>
+            </md-list>
+        </div>
+
+    </body>
+</html>
