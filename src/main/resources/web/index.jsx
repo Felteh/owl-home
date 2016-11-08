@@ -1,13 +1,33 @@
-var Route = ReactRouter.Route;
+var App = React.createClass({
+    getInitialState: function () {
+        return {};
+    },
+    render: function () {
+        return (
+ <div id="page-content">
+            <h1>yo</h1>
+            {this.props.children}
+</div>
+        );
+    }
+});
+
+var OptionsMenu = React.createClass({
+    getInitialState: function () {
+        return {};
+    },
+    render: function () {
+        return (
+            <h1>HELLO</h1>
+        );
+    }
+});
 
 ReactDOM.render(
-    <ReactRouter.Router history={History.createHistory()}>
-        <ReactRouter.Route path="/signup" component={SignUpPage}/>
+    <ReactRouter.Router history={ReactRouter.browserHistory}>
         <ReactRouter.Route path="/" component={App}>
-            <ReactRouter.IndexRoute component={ActivityStream}/>
-            <ReactRouter.Route path="/users/:userId" component={UserChirps}/>
-            <ReactRouter.Route path="/addFriend" component={AddFriendPage}/>
-        </Route>
+            <ReactRouter.IndexRoute component={OptionsMenu}/>
+        </ReactRouter.Route>
     </ReactRouter.Router>,
     document.getElementById("content")
 );
