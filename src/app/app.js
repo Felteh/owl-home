@@ -2,8 +2,8 @@ import React from 'react';
 import ReactDom from 'react-dom';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import {App} from './main';
-import {Video} from './pages/video/video'
-import {Light} from './pages/light/light'
+import {VideoListingContainer} from './pages/video/video'
+import {LightListing} from './pages/light/light'
 import {Router, Route, IndexRoute, browserHistory} from 'react-router';
 
 // Needed for onTouchTap
@@ -15,8 +15,8 @@ injectTapEventPlugin();
 ReactDom.render(
     <Router history={browserHistory}>
         <Route path="/" component={App}>
-            <Route path="/pages/video" component={Video}/>
-            <Route path="/pages/light" component={Light}/>
+            <Route path="/pages/video" component={VideoListingContainer}/>
+            <Route path="/pages/light" component={LightListing}/>
         </Route>
     </Router>,
     document.getElementById("app")

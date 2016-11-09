@@ -1,6 +1,6 @@
 import React from 'react';
 
-export class Light extends React.Component {
+export class LightListing extends React.Component {
     constructor(props) {
         super(props);
         this.state = {};
