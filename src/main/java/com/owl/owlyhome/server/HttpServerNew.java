@@ -10,6 +10,9 @@ import akka.http.javadsl.model.HttpResponse;
 import akka.http.javadsl.server.Route;
 import akka.stream.ActorMaterializer;
 import akka.stream.javadsl.Flow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -17,8 +20,6 @@ import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class HttpServerNew extends ErrorHandlingDirectives {
 
@@ -47,27 +48,24 @@ public class HttpServerNew extends ErrorHandlingDirectives {
 
     private Route createRoute() {
         Route indexHtml = get(() -> route(pathSingleSlash(() -> getFromResource("web/index.html"))));
-        Route indexJsx = get(() -> route(pathPrefix("index.jsx", () -> getFromResource("web/index.jsx"))));
-
-        Route angularComponents = get(() -> route(pathPrefix("components", () -> getFromResourceDirectory("web/components"))));
-        Route angularPages = get(() -> route(pathPrefix("pages", () -> getFromResourceDirectory("web/pages"))));
+        Route appJsx = get(() -> route(pathPrefix("app.js", () -> getFromResource("web/app.js"))));
+        Route pages = get(() -> route(pathPrefix("pages", () -> getFromResource("web/index.html"))));
 
         Route apis = route(
                 indexHtml,
-                indexJsx,
-                angularComponents,
-                angularPages
+                appJsx,
+                pages
         );
 
         return logRequestResult(this::requestMethodAsInfo,
-                                this::rejectionsAsInfo,
-                                () -> handleExceptions(
-                                        exceptionHandlerLogAndReturnInternalError(),
-                                        () -> handleRejections(
-                                                rejectionHandlerLogAndReturnNotFound(),
-                                                () -> apis
-                                        )
-                                )
+                this::rejectionsAsInfo,
+                () -> handleExceptions(
+                        exceptionHandlerLogAndReturnInternalError(),
+                        () -> handleRejections(
+                                rejectionHandlerLogAndReturnNotFound(),
+                                () -> apis
+                        )
+                )
         );
     }
 

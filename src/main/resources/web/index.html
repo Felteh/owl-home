@@ -1,19 +1,39 @@
-<html lang="en" >
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Kupos</title>
-        <!-- Angular Material style sheet -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-    </head>
-    <body>
-        <div id="content"></div>
+<!doctype html>
+<html class="no-js" lang="">
 
-        <script src="https://unpkg.com/react@15/dist/react.js"></script>
-        <script src="https://unpkg.com/react-dom@15/dist/react-dom.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/react-router/3.0.0/ReactRouter.min.js"></script>
-        <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Owl-Home</title>
 
-        <!-- React -->
-        <script src="/index.jsx" type="text/babel"></script>
-    </body>
+    <!-- Use minimum-scale=1 to enable GPU rasterization -->
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, user-scalable=0, maximum-scale=1, minimum-scale=1"
+    >
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<body>
+<div id="app"></div>
+
+<!-- This script adds the Roboto font to our project. For more detail go to this site:  http://www.google.com/fonts#UsePlace:use/Collection:Roboto:400,300,500 -->
+<script>
+    var WebFontConfig = {
+        google: { families: [ 'Roboto:400,300,500:latin' ] }
+    };
+    (function() {
+        var wf = document.createElement('script');
+        wf.src = 'https://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+        wf.type = 'text/javascript';
+        wf.async = 'true';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(wf, s);
+    })();
+</script>
+
+
+<script src="/app.js"></script>
+</body>
+
 </html>
