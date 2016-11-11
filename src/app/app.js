@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDom from 'react-dom';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import {App} from './main';
-import {VideoListingContainer} from './pages/video/video'
+import {VideoListingPage} from './pages/video/video'
 import {LightListing} from './pages/light/light'
 import {Router, Route, IndexRoute, browserHistory} from 'react-router';
 
@@ -15,7 +15,7 @@ injectTapEventPlugin();
 ReactDom.render(
     <Router history={browserHistory}>
         <Route path="/" component={App}>
-            <Route path="/pages/video" component={VideoListingContainer}/>
+            <Route path="/pages/video" component={VideoListingPage}/>
             <Route path="/pages/light" component={LightListing}/>
         </Route>
     </Router>,

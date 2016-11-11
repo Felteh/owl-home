@@ -1,9 +1,10 @@
 import React from 'react';
 import {browserHistory} from 'react-router'
-import {BottomNavigation, BottomNavigationItem} from 'material-ui/BottomNavigation';
+        import {BottomNavigation, BottomNavigationItem} from 'material-ui/BottomNavigation';
 import Paper from 'material-ui/Paper';
 import FontIcon from 'material-ui/FontIcon';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import {Tabs, Tab} from 'material-ui/Tabs';
 
 const homeIcon = <FontIcon className="material-icons">home</FontIcon>;
 const videoIcon = <FontIcon className="material-icons">ondemand_video</FontIcon>;
@@ -15,54 +16,59 @@ const lightPath = '/pages/light';
 export class App extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {selectedIndex: 0};
         this.calcSelectedIndex();
     }
 
     calcSelectedIndex() {
-        var selectedIndex;
+        var selectedIndex = 0;
         switch (this.props.location.pathname) {
             case videoPath:
-                selectedIndex = 0;
+                selectedIndex = 1;
                 break;
             case lightPath:
-                selectedIndex = 1;
+                selectedIndex = 2;
                 break;
         }
         this.state.selectedIndex = selectedIndex;
     }
-
+    goToHome() {
+        browserHistory.push('/');
+    }
     goToVideo() {
         browserHistory.push('/pages/video');
-        this.state.selectedIndex = 0;
     }
 
     goToLights() {
         browserHistory.push('/pages/light');
-        this.state.selectedIndex = 1;
     }
 
     render() {
         return (
-            <MuiThemeProvider>
-                <div>
-                    {this.props.children}
-                    <Paper zDepth={1}>
-                        <BottomNavigation selectedIndex={this.state.selectedIndex}>
-                            <BottomNavigationItem
-                                label="Video"
+                <MuiThemeProvider>
+                    <div>
+                        <Tabs initialSelectedIndex={this.state.selectedIndex}>
+                            <Tab
+                                icon={homeIcon}
+                                label="Home"
+                                onActive={() => this.goToHome()}
+                                />
+                            <Tab
                                 icon={videoIcon}
-                                onTouchTap={()=> this.goToVideo()}
-                            />
-                            <BottomNavigationItem
-                                label="Lights"
+                                label="Video"
+                                onActive={() => this.goToVideo()}
+                                />
+                            <Tab
                                 icon={lightsIcon}
-                                onTouchTap={() => this.goToLights()}
-                            />
-                        </BottomNavigation>
-                    </Paper>
-                </div>
-            </MuiThemeProvider>
-        );
+                                label="Lights"
+                                onActive={() => this.goToLights()}
+                                />
+                        </Tabs>
+                        <Paper zDepth={1}>
+                            {this.props.children}
+                        </Paper>
+                    </div>
+                </MuiThemeProvider>
+                );
     }
 }

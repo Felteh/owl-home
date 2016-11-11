@@ -28,12 +28,14 @@ public class HttpServerNew extends ErrorHandlingDirectives {
 
     private final ActorSystem system;
     private final ActorMaterializer materializer;
+    private final Route[] routes;
 
     private ServerBinding boundRoute;
 
-    public HttpServerNew(ActorSystem system, ActorMaterializer materializer) {
+    public HttpServerNew(ActorSystem system, ActorMaterializer materializer, Route... routes) {
         this.system = system;
         this.materializer = materializer;
+        this.routes = routes;
     }
 
     public void start() throws UnknownHostException, SocketException, InterruptedException, ExecutionException, TimeoutException {
@@ -54,7 +56,10 @@ public class HttpServerNew extends ErrorHandlingDirectives {
         Route apis = route(
                 indexHtml,
                 appJsx,
-                pages
+                pages,
+                route(
+                        routes
+                )
         );
 
         return logRequestResult(this::requestMethodAsInfo,
