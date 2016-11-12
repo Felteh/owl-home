@@ -28,7 +28,8 @@ public class VideoRoute extends AllDirectives implements Supplier<Route> {
     private static final Logger LOG = LoggerFactory.getLogger(VideoRoute.class);
 
     private FiniteDuration DEFAULT_DURATION = Duration.apply(10, TimeUnit.SECONDS);
-    private String ROOT_FOLDER = "D:\\Download";
+    private String ROOT_FOLDER = "/mnt/usb";
+//    private String ROOT_FOLDER = "D:\\Download";
     private final ObjectMapper mapper;
     private final ActorRef videoActor;
 
