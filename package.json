@@ -3,8 +3,7 @@
   "version": "0.15.0",
   "description": "Maven ReactJs Material-UI",
   "scripts": {
-    "start": "gulp",
-    "shrinkwrap": "gulp package"
+    "start": "gulp"
   },
   "private": true,
   "devDependencies": {
