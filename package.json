@@ -4,6 +4,7 @@
   "description": "Maven ReactJs Material-UI",
   "scripts": {
     "start": "gulp"
+    "package": "gulp package"
   },
   "private": true,
   "devDependencies": {
