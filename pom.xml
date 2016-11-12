@@ -58,6 +58,34 @@
         </dependency>
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>installNode</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.github.eirslett</groupId>
+                        <artifactId>frontend-maven-plugin</artifactId>
+                        <version>1.2</version>
+
+                        <executions>
+                            <execution>
+                                <id>install node and npm</id>
+                                <goals>
+                                    <goal>install-node-and-npm</goal>
+                                </goals>
+                                <configuration>
+                                    <nodeVersion>v0.10.27</nodeVersion>
+                                    <npmVersion>3.10.9</npmVersion>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>
@@ -66,17 +94,6 @@
                 <version>1.2</version>
 
                 <executions>
-                    <execution>
-                        <id>install node and npm</id>
-                        <goals>
-                            <goal>install-node-and-npm</goal>
-                        </goals>
-                        <configuration>
-                            <nodeVersion>v0.10.27</nodeVersion>
-                            <npmVersion>3.10.9</npmVersion>
-                        </configuration>
-                    </execution>
-
                     <execution>
                         <id>npm install</id>
                         <goals>
