@@ -84,7 +84,7 @@
                         <configuration>
                             <executable>npm</executable>
                             <arguments>
-                                <argument>package</argument>
+                                <argument>shrinkwrap</argument>
                             </arguments>
                         </configuration>
                         <goals>
