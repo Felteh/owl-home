@@ -12,7 +12,6 @@ import akka.util.Timeout;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.owl.owlyhome.AudioOption;
-import com.owl.owlyhome.Main;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -89,7 +88,7 @@ public class VideoRoute extends AllDirectives implements Supplier<Route> {
             }
             throw new Exception("Return type of actors peculiar:" + res);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Error", e);
             return StatusCodes.INTERNAL_SERVER_ERROR;
         }
     }

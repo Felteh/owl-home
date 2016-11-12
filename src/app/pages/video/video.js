@@ -14,7 +14,7 @@ export class VideoListingPage extends React.Component {
         return (
                 <div>
                     <VideoToolbar/>
-                    <VideoListingContainer/>
+                    <VideoListing/>
                 </div>
                 );
     }
@@ -27,6 +27,7 @@ class VideoToolbar extends React.Component {
             console.log("SUCCESS");
         }).catch(function (error) {
             console.log("FAIL");
+            console.error(error);
         });
     }
 
@@ -36,6 +37,7 @@ class VideoToolbar extends React.Component {
             console.log("SUCCESS");
         }).catch(function (error) {
             console.log("FAIL");
+            console.error(error);
         });
     }
 
@@ -45,6 +47,7 @@ class VideoToolbar extends React.Component {
             console.log("SUCCESS");
         }).catch(function (error) {
             console.log("FAIL");
+            console.error(error);
         });
     }
 
@@ -61,38 +64,27 @@ class VideoToolbar extends React.Component {
     }
 }
 
-class VideoListingContainer extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {vidRequest: this.fetchVideos()};
-    }
-
-    fetchVideos() {
-        console.log("Requesting from /videos");
-        return fetch('/videos').then(function (response) {
-            return response.json();
-        }).catch(function (error) {
-            console.log("EPIC FAIL ON QUERY");
-            return [{'file': 'blah'}];
-        });
-    }
-
-    render() {
-        return (
-                <VideoListing vidRequest={this.state.vidRequest}></VideoListing>
-                );
-    }
-}
-
 class VideoListing extends React.Component {
     constructor(props) {
         super(props);
         this.state = {videos: []};
-        var self = this;
-        props.vidRequest.then(function (response) {
-            self.setState({videos: response});
-        });
     }
+    componentDidMount() {
+        console.log("Requesting from /videos");
+        var _this = this;
+        fetch('/videos')
+                .then(function (response) {
+                    return response.json()
+                })
+                .then(function (response) {
+                    _this.setState({videos: response});
+                })
+                .catch(function (error) {
+                    console.log("EPIC FAIL ON QUERY");
+                    console.error(error);
+                });
+    }
+
     render() {
         return (
                 <List>
@@ -119,12 +111,16 @@ class VideoListItem extends React.Component {
         console.log("Requesting from /stop");
         return fetch('/play', {
             method: "POST",
-            headers:new Headers({"Content-Type": "application/json"}),
+            headers: new Headers({"Content-Type": "application/json"}),
             body: JSON.stringify({filename: video.path, audio: 'both'})
         }).then(function (response) {
+            if (!response.ok) {
+                throw Error(response.statusText);
+            }
             console.log("SUCCESS");
         }).catch(function (error) {
             console.log("FAIL");
+            console.error(error);
         });
     }
     render() {

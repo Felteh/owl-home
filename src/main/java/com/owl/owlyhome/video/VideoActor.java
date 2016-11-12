@@ -2,12 +2,15 @@ package com.owl.owlyhome.video;
 
 import akka.actor.AbstractActor;
 import akka.actor.Props;
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
 import akka.japi.pf.ReceiveBuilder;
 import java.io.IOException;
 import java.io.InputStream;
 
 public class VideoActor extends AbstractActor {
 
+    private final LoggingAdapter LOG = Logging.getLogger(getContext().system(), this);
     public static final String PAUSE = "Pause";
     public static final String RESUME = "Resume";
     public static final String STOP = "Stop";
@@ -25,27 +28,27 @@ public class VideoActor extends AbstractActor {
     public VideoActor() {
         receive(
                 ReceiveBuilder
-                .match(
-                        String.class,
-                        (s) -> PAUSE.equals(s),
-                        (s) -> pause()
-                )
-                .match(
-                        String.class,
-                        (s) -> RESUME.equals(s),
-                        (s) -> resume()
-                )
-                .match(
-                        String.class,
-                        (s) -> STOP.equals(s),
-                        (s) -> stop()
-                )
-                .match(
-                        Play.class,
-                        (s) -> play(s)
-                )
-                .matchAny((s) -> System.out.println("Peculiar input:" + s))
-                .build()
+                        .match(
+                                String.class,
+                                (s) -> PAUSE.equals(s),
+                                (s) -> pause()
+                        )
+                        .match(
+                                String.class,
+                                (s) -> RESUME.equals(s),
+                                (s) -> resume()
+                        )
+                        .match(
+                                String.class,
+                                (s) -> STOP.equals(s),
+                                (s) -> stop()
+                        )
+                        .match(
+                                Play.class,
+                                (s) -> play(s)
+                        )
+                        .matchAny((s) -> LOG.debug("Peculiar input={}", s))
+                        .build()
         );
     }
 
@@ -54,11 +57,11 @@ public class VideoActor extends AbstractActor {
 
     private void play(Play req) {
         if (state.equals(State.READY)) {
-            System.out.println("Playing path:" + req);
+            LOG.debug("Playing path={}", req);
             ProcessBuilder processBuilder = new java.lang.ProcessBuilder("omxplayer", "-o", req.audio.commandLine, req.filename);
             processBuilder.redirectErrorStream(true); // redirect error stream to output stream
             processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
-            System.out.println("Process starting:" + processBuilder.command());
+            LOG.debug("Process starting={}", processBuilder.command());
 
             try {
                 process = processBuilder.start();
@@ -74,7 +77,7 @@ public class VideoActor extends AbstractActor {
                                 nr = is.read(buf);
                             }
                         } catch (IOException ex) {
-                            ex.printStackTrace();
+                            LOG.error("Error reading process", ex);
                         }
                     }
 
@@ -83,7 +86,7 @@ public class VideoActor extends AbstractActor {
 
                 success(State.PLAYING);
             } catch (IOException e) {
-                e.printStackTrace();
+                LOG.error("PLAY Failure", e);
                 error();
             }
         } else {
@@ -93,7 +96,7 @@ public class VideoActor extends AbstractActor {
 
     private void pause() throws IOException {
         if (state.equals(State.PLAYING)) {
-            System.out.println("Pausing");
+            LOG.debug("Pausing");
             process.getOutputStream().write(" ".getBytes());
             process.getOutputStream().flush();
 
@@ -105,8 +108,8 @@ public class VideoActor extends AbstractActor {
 
     private void stop() throws InterruptedException, IOException {
         if (state.equals(State.PLAYING) || state.equals(State.PAUSED)) {
-            System.out.println("Stopping");
-            System.out.println("Sending kill command");
+            LOG.debug("Stopping");
+            LOG.debug("Sending kill command");
             Runtime.getRuntime().exec("pkill omxplayer");
             process = null;
             processPrinter.stop();
@@ -120,7 +123,7 @@ public class VideoActor extends AbstractActor {
 
     private void resume() throws IOException {
         if (state.equals(State.PAUSED)) {
-            System.out.println("Resuming");
+            LOG.debug("Resuming");
             process.getOutputStream().write(" ".getBytes());
             process.getOutputStream().flush();
 

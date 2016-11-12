@@ -3,6 +3,7 @@ package com.owl.owlyhome;
 import akka.actor.ActorSystem;
 import akka.stream.ActorMaterializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.owl.owlyhome.light.LightRoute;
 import com.owl.owlyhome.server.HttpServerNew;
 import com.owl.owlyhome.video.VideoRoute;
 import java.io.IOException;
@@ -25,8 +26,9 @@ public class Main {
 
         final ObjectMapper mapper = new ObjectMapper();
         VideoRoute video = new VideoRoute(system, mapper);
+        LightRoute light = new LightRoute(system, mapper);
 
-        HttpServerNew server = new HttpServerNew(system, materializer, video.get());
+        HttpServerNew server = new HttpServerNew(system, materializer, video.get(), light.get());
         server.start();
     }
 }

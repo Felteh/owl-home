@@ -1,14 +1,150 @@
 import React from 'react';
+import {List, ListItem} from 'material-ui/List';
+import Subheader from 'material-ui/Subheader';
+import FontIcon from 'material-ui/FontIcon';
+import Toggle from 'material-ui/Toggle';
 
-export class LightListing extends React.Component {
+export class LightListingPage extends React.Component {
+    render() {
+        return (
+                <div>
+                    <LightListing/>
+                </div>
+                );
+    }
+}
+
+class LightListing extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {lights: []};
+    }
+    componentDidMount() {
+        console.log("Requesting from /lights");
+        var _this = this;
+        fetch('/lights')
+                .then(function (response) {
+                    return response.json()
+                })
+                .then(function (response) {
+                    _this.setState({lights: response});
+                })
+                .catch(function (error) {
+                    console.log("EPIC FAIL ON QUERY");
+                    console.error(error);
+                });
     }
 
     render() {
         return (
-            <h1>Lights go in, pies come out!</h1>
-        );
+                <List>
+                <Subheader>Lights</Subheader>
+                {
+                    this.state.lights.map(
+                            function (v) {
+                                return (
+                                                <LightListItem
+                                                    key={v.id}
+                                                    light={v}
+                                                    />
+                                            );
+                })
+                }
+                </List>
+                            );
+            }
+}
+
+class LightListItem extends React.Component {
+    render() {
+        return (
+                <ListItem
+                    leftIcon={(<FontIcon className="material-icons">{this.props.light.icon}</FontIcon>)}                    
+                    primaryText={this.props.light.name}
+                    primaryTogglesNestedList={true}
+                    initiallyOpen={this.props.light.enabled}
+                    nestedItems=
+                    {
+                            [
+                                    <OnOffToggle key="1" light={this.props.light}/>,
+                                    <ListItem
+                                        key="2"
+                                        primaryText="White (Not Working)"
+                                        />,
+                                    <ListItem
+                                        key="3"
+                                        primaryText="Red (Not Working)"
+                                        />,
+                                    <ListItem
+                                        key="4"
+                                        primaryText="Blue (Not Working)"
+                                        />
+                                ]
+                    }
+                    />
+                );
+    }
+}
+
+class OnOffToggle extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {toggled: props.light.enabled};
+    }
+    on() {
+        var _this = this;
+        return fetch('/lights', {
+            method: "POST",
+            headers: new Headers({"Content-Type": "application/json"}),
+            body: JSON.stringify({lightAddress: this.props.light.id, state: "on"})
+        }).then(function (response) {
+            if (!response.ok) {
+                throw Error(response.statusText);
+            }
+            console.log("SUCCESS");
+            _this.setState({toggled: true});
+        }).catch(function (error) {
+            console.log("FAIL");
+            console.error(error);
+        });
+    }
+    off() {
+        var _this = this;
+        return fetch('/lights', {
+            method: "POST",
+            headers: new Headers({"Content-Type": "application/json"}),
+            body: JSON.stringify({lightAddress: this.props.light.id, state: "off"})
+        }).then(function (response) {
+            if (!response.ok) {
+                throw Error(response.statusText);
+            }
+            console.log("SUCCESS");
+            _this.setState({toggled: false});
+        }).catch(function (error) {
+            console.log("FAIL");
+            console.error(error);
+        });
+    }
+    onToggle() {
+        var newState = !this.state.toggled;
+        if (newState) {
+            this.on();
+        } else {
+            this.off();
+        }
+    }
+    render() {
+        return (
+                <ListItem
+                    key="1"
+                    primaryText="Enabled"
+                    rightToggle={
+                                <Toggle
+                                    toggled={this.state.toggled}
+                                    onToggle={this.onToggle.bind(this)}
+                                    />
+                    }
+                    />
+                );
     }
 }
