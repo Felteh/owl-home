@@ -99,7 +99,7 @@ public class RadioActor extends AbstractActor {
         if (state.equals(State.PLAYING)) {
             LOG.debug("Stopping");
             LOG.debug("Sending kill command");
-            Runtime.getRuntime().exec("pkill clvc");
+            Runtime.getRuntime().exec("pkill vlc*");
             process = null;
             processPrinter.stop();
             processPrinter = null;
