@@ -2,7 +2,8 @@ package com.owl.owlyhome.video;
 
 import com.owl.owlyhome.AudioOption;
 
-public class Play {
+class Play {
+
     public final String filename;
     public final AudioOption audio;
 
@@ -15,6 +16,5 @@ public class Play {
     public String toString() {
         return "Play{" + "filename=" + filename + ", audio=" + audio + '}';
     }
-    
-    
+
 }

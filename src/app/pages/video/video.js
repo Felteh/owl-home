@@ -22,8 +22,8 @@ export class VideoListingPage extends React.Component {
 
 class VideoToolbar extends React.Component {
     resume() {
-        console.log("Requesting from /resume");
-        return fetch('/resume').then(function (response) {
+        console.log("Requesting from /videos/resume");
+        return fetch('/videos/resume').then(function (response) {
             console.log("SUCCESS");
         }).catch(function (error) {
             console.log("FAIL");
@@ -32,8 +32,8 @@ class VideoToolbar extends React.Component {
     }
 
     pause() {
-        console.log("Requesting from /pause");
-        return fetch('/pause').then(function (response) {
+        console.log("Requesting from /videos/pause");
+        return fetch('/videos/pause').then(function (response) {
             console.log("SUCCESS");
         }).catch(function (error) {
             console.log("FAIL");
@@ -42,8 +42,8 @@ class VideoToolbar extends React.Component {
     }
 
     stop() {
-        console.log("Requesting from /stop");
-        return fetch('/stop').then(function (response) {
+        console.log("Requesting from /videos/stop");
+        return fetch('/videos/stop').then(function (response) {
             console.log("SUCCESS");
         }).catch(function (error) {
             console.log("FAIL");
@@ -74,7 +74,7 @@ class VideoListing extends React.Component {
         var _this = this;
         fetch('/videos')
                 .then(function (response) {
-                    return response.json()
+                    return response.json();
                 })
                 .then(function (response) {
                     _this.setState({videos: response});
@@ -108,8 +108,8 @@ class VideoListing extends React.Component {
 
 class VideoListItem extends React.Component {
     play(video) {
-        console.log("Requesting from /stop");
-        return fetch('/play', {
+        console.log("Requesting from /videos/play");
+        return fetch('/videos/play', {
             method: "POST",
             headers: new Headers({"Content-Type": "application/json"}),
             body: JSON.stringify({filename: video.path, audio: 'both'})

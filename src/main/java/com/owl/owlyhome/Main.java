@@ -4,6 +4,7 @@ import akka.actor.ActorSystem;
 import akka.stream.ActorMaterializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.owl.owlyhome.light.LightRoute;
+import com.owl.owlyhome.radio.RadioRoute;
 import com.owl.owlyhome.server.HttpServerNew;
 import com.owl.owlyhome.video.VideoRoute;
 import java.io.IOException;
@@ -25,10 +26,11 @@ public class Main {
         final ActorMaterializer materializer = ActorMaterializer.create(system);
 
         final ObjectMapper mapper = new ObjectMapper();
+        RadioRoute radio = new RadioRoute(system, materializer, mapper);
         VideoRoute video = new VideoRoute(system, mapper);
         LightRoute light = new LightRoute(system, mapper);
 
-        HttpServerNew server = new HttpServerNew(system, materializer, video.get(), light.get());
+        HttpServerNew server = new HttpServerNew(system, materializer, radio.get(), video.get(), light.get());
         server.start();
     }
 }

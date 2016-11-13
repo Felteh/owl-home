@@ -6,6 +6,7 @@ import akka.http.javadsl.marshallers.jackson.Jackson;
 import akka.http.javadsl.model.StatusCode;
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.AllDirectives;
+import akka.http.javadsl.server.PathMatchers;
 import akka.http.javadsl.server.Route;
 import akka.pattern.PatternsCS;
 import akka.util.Timeout;
@@ -47,16 +48,15 @@ public class VideoRoute extends AllDirectives implements Supplier<Route> {
                                         "videos",
                                         () -> this.complete(getFiles())
                                 ),
-                                path(
-                                        "resume",
+                                path(PathMatchers.segment("videos").slash("resume"),
                                         () -> this.completeWithFutureStatus(resume())
                                 ),
                                 path(
-                                        "pause",
+                                        PathMatchers.segment("videos").slash("pause"),
                                         () -> this.completeWithFutureStatus(pause())
                                 ),
                                 path(
-                                        "stop",
+                                        PathMatchers.segment("videos").slash("stop"),
                                         () -> this.completeWithFutureStatus(stop())
                                 )
                         )
@@ -64,9 +64,9 @@ public class VideoRoute extends AllDirectives implements Supplier<Route> {
                 post(
                         () -> route(
                                 path(
-                                        "play",
+                                        PathMatchers.segment("videos").slash("play"),
                                         () -> entity(
-                                                Jackson.unmarshaller(V1Play.class),
+                                                Jackson.unmarshaller(V1VideoPlay.class),
                                                 (t) -> this.completeWithFutureStatus(play(t))
                                         )
                                 )
@@ -94,7 +94,7 @@ public class VideoRoute extends AllDirectives implements Supplier<Route> {
         }
     }
 
-    private CompletionStage<StatusCode> play(V1Play request) {
+    private CompletionStage<StatusCode> play(V1VideoPlay request) {
         CompletionStage<Object> ask = PatternsCS.ask(videoActor, new Play(request.filename, AudioOption.fromRestApi(request.audio)), Timeout.apply(DEFAULT_DURATION));
         return ask.thenApply(this::resolveFutureToStatusCode);
     }

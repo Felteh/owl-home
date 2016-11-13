@@ -7,9 +7,11 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import {Tabs, Tab} from 'material-ui/Tabs';
 
 const homeIcon = <FontIcon className="material-icons">home</FontIcon>;
+const radioIcon = <FontIcon className="material-icons">radio</FontIcon>;
 const videoIcon = <FontIcon className="material-icons">ondemand_video</FontIcon>;
 const lightsIcon = <FontIcon className="material-icons">lightbulb_outline</FontIcon>;
 
+const radioPath = '/pages/radio';
 const videoPath = '/pages/video';
 const lightPath = '/pages/light';
 
@@ -23,11 +25,14 @@ export class App extends React.Component {
     calcSelectedIndex() {
         var selectedIndex = 0;
         switch (this.props.location.pathname) {
-            case videoPath:
+            case radioPath:
                 selectedIndex = 1;
                 break;
-            case lightPath:
+            case videoPath:
                 selectedIndex = 2;
+                break;
+            case lightPath:
+                selectedIndex = 3;
                 break;
         }
         this.state.selectedIndex = selectedIndex;
@@ -35,12 +40,15 @@ export class App extends React.Component {
     goToHome() {
         browserHistory.push('/');
     }
+    goToRadio() {
+        browserHistory.push(radioPath);
+    }
     goToVideo() {
-        browserHistory.push('/pages/video');
+        browserHistory.push(videoPath);
     }
 
     goToLights() {
-        browserHistory.push('/pages/light');
+        browserHistory.push(lightPath);
     }
 
     render() {
@@ -52,6 +60,11 @@ export class App extends React.Component {
                                 icon={homeIcon}
                                 label="Home"
                                 onActive={() => this.goToHome()}
+                                />
+                            <Tab
+                                icon={radioIcon}
+                                label="Radio"
+                                onActive={() => this.goToRadio()}
                                 />
                             <Tab
                                 icon={videoIcon}
