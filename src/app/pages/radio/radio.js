@@ -11,6 +11,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import LinearProgress from 'material-ui/LinearProgress';
 import Badge from 'material-ui/Badge';
+import Snackbar from 'material-ui/Snackbar';
 
 export class RadioListingPage extends React.Component {
     render() {
@@ -24,24 +25,39 @@ export class RadioListingPage extends React.Component {
 }
 
 class RadioToolbar extends React.Component {
-
+    constructor(props) {
+        super(props);
+        this.state = {errorOpen: false, errorMsg: "No issue"};
+    }
     stop() {
+        var this_ = this;
         console.log("Requesting from /radio/stop");
         return fetch('/radio/stop').then(function (response) {
+            if (!response.ok) {
+                throw Error(response.statusText);
+            }
             console.log("SUCCESS");
         }).catch(function (error) {
             console.log("FAIL");
             console.error(error);
+            this_.setState({errorOpen: true, errorMsg: error.message});
         });
     }
 
     render() {
         return (
-                <Toolbar>
-                    <ToolbarGroup firstChild={true}>
-                        <RaisedButton label="Stop" secondary={true} onTouchTap={() => this.stop()} />
-                    </ToolbarGroup>
-                </Toolbar>
+                <div>
+                    <Toolbar>
+                        <ToolbarGroup firstChild={true}>
+                            <RaisedButton label="Stop" secondary={true} onTouchTap={() => this.stop()} />
+                        </ToolbarGroup>
+                    </Toolbar>
+                    <Snackbar
+                        open={this.state.errorOpen}
+                        message={this.state.errorMsg}
+                        autoHideDuration={2000}
+                        />
+                </div>
                 );
     }
 }
@@ -51,7 +67,9 @@ class RadioListing extends React.Component {
         super(props);
         this.state = {
             radio: [],
-            loading: false
+            loading: false,
+            errorOpen: false,
+            errorMsg: "No issue"
         };
     }
     componentDidMount() {
@@ -63,7 +81,7 @@ class RadioListing extends React.Component {
             query = this.refs.stationSearch.getValue();
         }
         this.setState({radio: this.state.radio, loading: true});
-        var _this = this;
+        var this_ = this;
         console.log("Requesting from /radio with query=" + query);
         fetch('/radio',
                 {
@@ -72,15 +90,18 @@ class RadioListing extends React.Component {
                     body: JSON.stringify({query: query})
                 })
                 .then(function (response) {
+                    if (!response.ok) {
+                        throw Error(response.statusText);
+                    }
                     return response.json();
                 })
                 .then(function (response) {
-                    _this.setState({radio: response.slice(0,20), loading: false});
+                    this_.setState({radio: response.slice(0, 20), loading: false, errorOpen: this_.state.errorOpen, errorMsg: this_.state.errorMsg});
                 })
                 .catch(function (error) {
                     console.log("EPIC FAIL ON QUERY");
                     console.error(error);
-                    _this.setState({radio: [], loading: false});
+                    this_.setState({radio: [], loading: false, errorOpen: true, errorMsg: error.message});
                 });
     }
 
@@ -115,6 +136,11 @@ class RadioListing extends React.Component {
                     })
                     }
                     </List>
+                    <Snackbar
+                        open={this.state.errorOpen}
+                        message={this.state.errorMsg}
+                        autoHideDuration={2000}
+                        />
                 </div>
                             );
             }
@@ -124,11 +150,11 @@ class RadioListing extends React.Component {
 class RadioListItem extends React.Component {
     constructor(props) {
         super(props);
-        this.state= {Listeners:0};
+        this.state = {Listeners: 0};
         if (props.radio && props.radio.Listeners) {
             var l = props.radio.Listeners;
-            if(l>1000){
-                l=Math.round(l/1000)+"k";
+            if (l > 1000) {
+                l = Math.round(l / 1000) + "k";
             }
             this.state = {Listeners: l};
         }

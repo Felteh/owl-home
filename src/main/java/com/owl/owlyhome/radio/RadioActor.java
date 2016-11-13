@@ -59,7 +59,7 @@ public class RadioActor extends AbstractActor {
             LOG.debug("Playing path={}", req);
             String streamUrl = getStreamUrl(req.station);
 
-            ProcessBuilder processBuilder = new java.lang.ProcessBuilder("/usr/bin/vlc-wrapper", streamUrl);
+            ProcessBuilder processBuilder = new java.lang.ProcessBuilder("su", "pi", "cvlc", streamUrl);
             processBuilder.redirectErrorStream(true); // redirect error stream to output stream
             processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
             LOG.debug("Process starting={}", processBuilder.command());

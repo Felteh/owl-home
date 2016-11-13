@@ -8,6 +8,7 @@ import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
+import Snackbar from 'material-ui/Snackbar';
 
 export class VideoListingPage extends React.Component {
     render() {
@@ -21,45 +22,71 @@ export class VideoListingPage extends React.Component {
 }
 
 class VideoToolbar extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {errorOpen: false, errorMsg: "No issue"};
+    }
     resume() {
+        var this_ = this;
         console.log("Requesting from /videos/resume");
         return fetch('/videos/resume').then(function (response) {
+            if (!response.ok) {
+                throw Error(response.statusText);
+            }
             console.log("SUCCESS");
         }).catch(function (error) {
             console.log("FAIL");
             console.error(error);
+            this_.setState({errorOpen: true, errorMsg: error.message});
         });
     }
 
     pause() {
+        var this_ = this;
         console.log("Requesting from /videos/pause");
         return fetch('/videos/pause').then(function (response) {
+            if (!response.ok) {
+                throw Error(response.statusText);
+            }
             console.log("SUCCESS");
         }).catch(function (error) {
             console.log("FAIL");
             console.error(error);
+            this_.setState({errorOpen: true, errorMsg: error.message});
         });
     }
 
     stop() {
+        var this_ = this;
         console.log("Requesting from /videos/stop");
         return fetch('/videos/stop').then(function (response) {
+            if (!response.ok) {
+                throw Error(response.statusText);
+            }
             console.log("SUCCESS");
         }).catch(function (error) {
             console.log("FAIL");
             console.error(error);
+            this_.setState({errorOpen: true, errorMsg: error.message});
         });
     }
 
     render() {
         return (
-                <Toolbar>
-                    <ToolbarGroup firstChild={true}>
-                        <RaisedButton label="Resume" secondary={true} onTouchTap={() => this.resume()} />
-                        <RaisedButton label="Pause" secondary={true} onTouchTap={() => this.pause()} />
-                        <RaisedButton label="Stop" secondary={true} onTouchTap={() => this.stop()} />
-                    </ToolbarGroup>
-                </Toolbar>
+                <div>
+                    <Toolbar>
+                        <ToolbarGroup firstChild={true}>
+                            <RaisedButton label="Resume" secondary={true} onTouchTap={() => this.resume()} />
+                            <RaisedButton label="Pause" secondary={true} onTouchTap={() => this.pause()} />
+                            <RaisedButton label="Stop" secondary={true} onTouchTap={() => this.stop()} />
+                        </ToolbarGroup>
+                    </Toolbar>
+                    <Snackbar
+                        open={this.state.errorOpen}
+                        message={this.state.errorMsg}
+                        autoHideDuration={2000}
+                        />
+                </div>
                 );
     }
 }
@@ -67,40 +94,56 @@ class VideoToolbar extends React.Component {
 class VideoListing extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {videos: []};
+        this.state = {
+            videos: [],
+            errorOpen: false,
+            errorMsg: "No issue"
+        };
     }
     componentDidMount() {
+        var this_ = this;
         console.log("Requesting from /videos");
-        var _this = this;
         fetch('/videos')
                 .then(function (response) {
+                    if (!response.ok) {
+                        throw Error(response.statusText);
+                    }
                     return response.json();
                 })
                 .then(function (response) {
-                    _this.setState({videos: response});
+                    this_.setState({videos: response, errorOpen: this_.state.errorOpen, errorMsg: this_.state.errorMsg});
                 })
                 .catch(function (error) {
                     console.log("EPIC FAIL ON QUERY");
                     console.error(error);
+                    this_.setState({videos: [], errorOpen: true, errorMsg: error.message});
                 });
     }
 
     render() {
         return (
-                <List>
-                <Subheader>Videos</Subheader>
-                {
-                    this.state.videos.map(
-                            function (v) {
-                                return (
+                <div>
+                    <List>
+                    <Subheader>Videos</Subheader>
+                    {
+                        this.state.videos.map(
+                                function (v) {
+                                    return (
                                                 <VideoListItem
                                                     key={v.path}
                                                     video={v}
                                                     />
-                                            );
-                })
-                }
-                </List>
+                                                );
+                    }
+                    )
+                    }
+                    </List>
+                    <Snackbar
+                        open={this.state.errorOpen}
+                        message={this.state.errorMsg}
+                        autoHideDuration={2000}
+                        />
+                </div>
                             );
             }
 }
