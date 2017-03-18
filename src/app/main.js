@@ -23,7 +23,7 @@ export class App extends React.Component {
     }
 
     calcSelectedIndex() {
-        var selectedIndex = 0;
+        let selectedIndex = 0;
         switch (this.props.location.pathname) {
             case radioPath:
                 selectedIndex = 1;
@@ -37,17 +37,16 @@ export class App extends React.Component {
         }
         this.state.selectedIndex = selectedIndex;
     }
-    goToHome() {
+    static goToHome() {
         browserHistory.push('/');
     }
-    goToRadio() {
+    static goToRadio() {
         browserHistory.push(radioPath);
     }
-    goToVideo() {
+    static goToVideo() {
         browserHistory.push(videoPath);
     }
-
-    goToLights() {
+    static goToLights() {
         browserHistory.push(lightPath);
     }
 
