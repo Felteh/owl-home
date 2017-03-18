@@ -24,4 +24,14 @@
                 <exec.mainClass>"com.owl.owlyhome.Main"</exec.mainClass>
             </properties>
         </action>
+        <action>
+            <actionName>CUSTOM-Install Node</actionName>
+            <displayName>Install Node</displayName>
+            <goals>
+                <goal>com.github.eirslett:frontend-maven-plugin:1.2:install-node-and-npm</goal>
+            </goals>
+            <activatedProfiles>
+                <activatedProfile>installNode</activatedProfile>
+            </activatedProfiles>
+        </action>
     </actions>
