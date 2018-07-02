@@ -45,17 +45,17 @@ public class HttpServerNew extends ErrorHandlingDirectives {
         boundRoute = http.bindAndHandle(routeFlow, ConnectHttp.toHost(ipAddress, PORT), materializer).toCompletableFuture().get();
         LOG.debug("Bound port={}", PORT);
     }
-    private Route createRoute() {
+    private Route createRoute2() {
         return route(
-                path("app.js", () ->
+                path("bundle.main.js", () ->
                         get(() ->
-                                getFromResource("web/app.js"))));
+                                getFromResource("static/app/bundle.main.js"))));
     }
 
-    private Route createRouteX() {
-        Route indexHtml = get(() -> route(pathSingleSlash(() -> getFromResource("web/index.html"))));
-        Route appJsx = get(() -> route(pathPrefix("app.js", () -> getFromResource("web/app.js"))));
-        Route pages = get(() -> route(pathPrefix("pages", () -> getFromResource("web/index.html"))));
+    private Route createRoute() {
+        Route indexHtml = get(() -> route(pathSingleSlash(() -> getFromResource("static/index.html"))));
+        Route appJsx = get(() -> route(path("bundle.main.js", () -> getFromResource("static/app/bundle.main.js"))));
+        Route pages = get(() -> route(path("pages", () -> getFromResource("static/index.html"))));
 
         Route apis = route(
                 appJsx,

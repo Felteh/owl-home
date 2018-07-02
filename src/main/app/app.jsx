@@ -4,7 +4,7 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 import {App} from './main';
 import {VideoListingPage} from './pages/video/video';
 import {LightListingPage} from './pages/light/light';
-import {Router, Route, IndexRoute, browserHistory} from 'react-router';
+import {browserHistory, IndexRouter, Route, Router} from "react-router-dom";
 
 // Needed for onTouchTap
 // http://stackoverflow.com/a/34015469/988941

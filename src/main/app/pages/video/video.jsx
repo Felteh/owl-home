@@ -1,14 +1,7 @@
 import React from 'react';
-import {List, ListItem} from 'material-ui/List';
-import Subheader from 'material-ui/Subheader';
-import Divider from 'material-ui/Divider';
-import FontIcon from 'material-ui/FontIcon';
-import IconButton from 'material-ui/IconButton';
-import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
-import DropDownMenu from 'material-ui/DropDownMenu';
-import MenuItem from 'material-ui/MenuItem';
-import RaisedButton from 'material-ui/RaisedButton';
-import Snackbar from 'material-ui/Snackbar';
+import List from "@material-ui/core/es/List/List";
+import ListSubheader from "@material-ui/core/es/ListSubheader/ListSubheader";
+import Snackbar from "@material-ui/core/es/Snackbar/Snackbar";
 
 export class VideoListingPage extends React.Component {
     render() {
@@ -124,7 +117,7 @@ class VideoListing extends React.Component {
         return (
             <div>
                 <List>
-                    <Subheader>Videos</Subheader>
+                    <ListSubheader>Videos</ListSubheader>
                     {
                         this.state.videos.map(
                             function (v) {
