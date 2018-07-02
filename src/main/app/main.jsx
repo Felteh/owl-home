@@ -1,17 +1,11 @@
 import React from 'react';
 import {browserHistory} from 'react-router'
-        import {BottomNavigation, BottomNavigationItem} from 'material-ui/BottomNavigation';
-import Paper from 'material-ui/Paper';
-import FontIcon from 'material-ui/FontIcon';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import {Tabs, Tab} from 'material-ui/Tabs';
 
 const homeIcon = <FontIcon className="material-icons">home</FontIcon>;
-const radioIcon = <FontIcon className="material-icons">radio</FontIcon>;
 const videoIcon = <FontIcon className="material-icons">ondemand_video</FontIcon>;
 const lightsIcon = <FontIcon className="material-icons">lightbulb_outline</FontIcon>;
 
-const radioPath = '/pages/radio';
 const videoPath = '/pages/video';
 const lightPath = '/pages/light';
 

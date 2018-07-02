@@ -4,7 +4,6 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 import {App} from './main';
 import {VideoListingPage} from './pages/video/video';
 import {LightListingPage} from './pages/light/light';
-import {RadioListingPage} from './pages/radio/radio';
 import {Router, Route, IndexRoute, browserHistory} from 'react-router';
 
 // Needed for onTouchTap
@@ -16,7 +15,6 @@ injectTapEventPlugin();
 ReactDom.render(
         <Router history={browserHistory}>
             <Route path="/" component={App}>
-                <Route path="/pages/radio" component={RadioListingPage}/>
                 <Route path="/pages/video" component={VideoListingPage}/>
                 <Route path="/pages/light" component={LightListingPage}/>
             </Route>

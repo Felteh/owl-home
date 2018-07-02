@@ -118,7 +118,7 @@
 //    private final Handler1<String> htmlHandler = (ctx, htmlPath) -> {
 //        System.out.println("Request for html: " + htmlPath);
 //        return ctx.complete(ContentTypes.TEXT_HTML_UTF8,
-//                            new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("web/" + htmlPath))).lines().collect(Collectors.joining("\n"))
+//                            new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("static/" + htmlPath))).lines().collect(Collectors.joining("\n"))
 //        );
 //    };
 //
@@ -126,7 +126,7 @@
 //    private final Handler1<String> cssHandler = (ctx, cssPath) -> {
 //        System.out.println("Request for css: " + cssPath);
 //        return ctx.complete(ContentTypes.create(MediaTypes.TEXT_CSS, HttpCharsets.UTF_8),
-//                            new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("web/" + cssPath))).lines().collect(Collectors.joining("\n"))
+//                            new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("static/" + cssPath))).lines().collect(Collectors.joining("\n"))
 //        );
 //    };
 //
@@ -137,7 +137,7 @@
 //                HttpResponse.create().withEntity(
 //                        HttpEntities.create(
 //                                ContentTypes.create(MediaTypes.IMAGE_SVG_XML),
-//                                new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("web/icons/" + svgPath))).lines().collect(Collectors.joining("\n")).getBytes()
+//                                new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("static/icons/" + svgPath))).lines().collect(Collectors.joining("\n")).getBytes()
 //                        )
 //                )
 //        );
@@ -174,7 +174,7 @@
 //        return route(
 //                pathEndOrSingleSlash()
 //                .route(
-//                        getFromResource("web/index.html")
+//                        getFromResource("static/index.html")
 //                ),
 //                path(htmlString)
 //                .route(
