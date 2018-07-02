@@ -16,15 +16,13 @@ import org.slf4j.LoggerFactory;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 public class HttpServerNew extends ErrorHandlingDirectives {
 
     private static final Logger LOG = LoggerFactory.getLogger(HttpServerNew.class);
-    private static final int PORT = 80;
+    private static final int PORT = 8080;
 
     private final ActorSystem system;
     private final ActorMaterializer materializer;
@@ -38,7 +36,7 @@ public class HttpServerNew extends ErrorHandlingDirectives {
         this.routes = routes;
     }
 
-    public void start() throws UnknownHostException, SocketException, InterruptedException, ExecutionException, TimeoutException {
+    public void start() throws SocketException, InterruptedException, ExecutionException {
         String ipAddress = findUnboundIpAddress();
 
         LOG.debug("Binding");
@@ -54,8 +52,8 @@ public class HttpServerNew extends ErrorHandlingDirectives {
         Route pages = get(() -> route(pathPrefix("pages", () -> getFromResource("web/index.html"))));
 
         Route apis = route(
-                indexHtml,
                 appJsx,
+                indexHtml,
                 pages,
                 route(
                         routes

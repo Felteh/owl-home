@@ -5,6 +5,7 @@ import akka.actor.Props;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import akka.japi.pf.ReceiveBuilder;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -25,31 +26,31 @@ public class VideoActor extends AbstractActor {
         return Props.create(VideoActor.class, () -> new VideoActor());
     }
 
-    public VideoActor() {
-        receive(
-                ReceiveBuilder
-                        .match(
-                                String.class,
-                                (s) -> PAUSE.equals(s),
-                                (s) -> pause()
-                        )
-                        .match(
-                                String.class,
-                                (s) -> RESUME.equals(s),
-                                (s) -> resume()
-                        )
-                        .match(
-                                String.class,
-                                (s) -> STOP.equals(s),
-                                (s) -> stop()
-                        )
-                        .match(
-                                Play.class,
-                                (s) -> play(s)
-                        )
-                        .matchAny((s) -> LOG.debug("Peculiar input={}", s))
-                        .build()
-        );
+    @Override
+    public Receive createReceive() {
+        return ReceiveBuilder
+                .create()
+                .match(
+                        String.class,
+                        (s) -> PAUSE.equals(s),
+                        (s) -> pause()
+                )
+                .match(
+                        String.class,
+                        (s) -> RESUME.equals(s),
+                        (s) -> resume()
+                )
+                .match(
+                        String.class,
+                        (s) -> STOP.equals(s),
+                        (s) -> stop()
+                )
+                .match(
+                        Play.class,
+                        (s) -> play(s)
+                )
+                .matchAny((s) -> LOG.debug("Peculiar input={}", s))
+                .build();
     }
 
     private Process process;

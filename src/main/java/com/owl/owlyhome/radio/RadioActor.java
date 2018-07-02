@@ -9,6 +9,7 @@ import akka.http.javadsl.model.HttpRequest;
 import akka.http.javadsl.model.HttpResponse;
 import akka.japi.pf.ReceiveBuilder;
 import akka.stream.Materializer;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -31,12 +32,18 @@ public class RadioActor extends AbstractActor {
     public final static Props props(Materializer materializer) {
         return Props.create(RadioActor.class, () -> new RadioActor(materializer));
     }
+
     private final Materializer materializer;
 
     public RadioActor(Materializer materializer) {
         this.materializer = materializer;
-        receive(
+    }
+
+    @Override
+    public Receive createReceive() {
+        return
                 ReceiveBuilder
+                        .create()
                         .match(
                                 String.class,
                                 (s) -> STOP.equals(s),
@@ -47,8 +54,7 @@ public class RadioActor extends AbstractActor {
                                 (s) -> play(s)
                         )
                         .matchAny((s) -> LOG.debug("Peculiar input={}", s))
-                        .build()
-        );
+                        .build();
     }
 
     private Process process;

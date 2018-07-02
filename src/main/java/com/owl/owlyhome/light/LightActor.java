@@ -10,6 +10,7 @@ import com.owl.owlyhome.light.util.Commands;
 import com.owl.owlyhome.light.util.LightUtil;
 import com.owl.owlyhome.light.util.OperationList;
 import com.owl.owlyhome.light.util.SendPacketOperation;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -29,6 +30,7 @@ public class LightActor extends AbstractActor {
     public final static Props props(LightGroup group) {
         return Props.create(LightActor.class, () -> new LightActor(group));
     }
+
     private final LightGroup group;
     private final InetAddress inetAddress;
     private final DatagramSocket socket;
@@ -38,21 +40,25 @@ public class LightActor extends AbstractActor {
         inetAddress = InetAddress.getByName(group.ipAddress);
 
         socket = connect();
-        receive(
-                ReceiveBuilder
-                        .match(
-                                String.class,
-                                (s) -> ON.equals(s),
-                                (s) -> on()
-                        )
-                        .match(
-                                String.class,
-                                (s) -> OFF.equals(s),
-                                (s) -> off()
-                        )
-                        .matchAny((s) -> LOG.debug("Peculiar input={}", s))
-                        .build()
-        );
+    }
+
+
+    @Override
+    public Receive createReceive() {
+        return ReceiveBuilder
+                .create()
+                .match(
+                        String.class,
+                        (s) -> ON.equals(s),
+                        (s) -> on()
+                )
+                .match(
+                        String.class,
+                        (s) -> OFF.equals(s),
+                        (s) -> off()
+                )
+                .matchAny((s) -> LOG.debug("Peculiar input={}", s))
+                .build();
     }
 
     private DatagramSocket connect() throws IOException {
