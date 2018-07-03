@@ -66,23 +66,19 @@ public class VideoActor extends AbstractActor {
 
             try {
                 process = processBuilder.start();
-                processPrinter = new Thread() {
-                    @Override
-                    public void run() {
-                        try {
-                            InputStream is = process.getInputStream();
-                            byte[] buf = new byte[1024];
-                            int nr = is.read(buf);
-                            while (nr != -1) {
-                                System.out.write(buf, 0, nr);
-                                nr = is.read(buf);
-                            }
-                        } catch (IOException ex) {
-                            LOG.error("Error reading process", ex);
+                processPrinter = new Thread(() -> {
+                    try {
+                        InputStream is = process.getInputStream();
+                        byte[] buf = new byte[1024];
+                        int nr = is.read(buf);
+                        while (nr != -1) {
+                            System.out.write(buf, 0, nr);
+                            nr = is.read(buf);
                         }
+                    } catch (IOException ex) {
+                        LOG.error("Error reading process", ex);
                     }
-
-                };
+                });
                 processPrinter.start();
 
                 success(State.PLAYING);
@@ -107,7 +103,7 @@ public class VideoActor extends AbstractActor {
         }
     }
 
-    private void stop() throws InterruptedException, IOException {
+    private void stop() throws IOException {
         if (state.equals(State.PLAYING) || state.equals(State.PAUSED)) {
             LOG.debug("Stopping");
             LOG.debug("Sending kill command");

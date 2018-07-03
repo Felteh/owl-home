@@ -19,9 +19,9 @@ import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.concurrent.ExecutionException;
 
-public class HttpServerNew extends ErrorHandlingDirectives {
+public class HttpServer extends ErrorHandlingDirectives {
 
-    private static final Logger LOG = LoggerFactory.getLogger(HttpServerNew.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HttpServer.class);
     private static final int PORT = 8080;
 
     private final ActorSystem system;
@@ -30,7 +30,7 @@ public class HttpServerNew extends ErrorHandlingDirectives {
 
     private ServerBinding boundRoute;
 
-    public HttpServerNew(ActorSystem system, ActorMaterializer materializer, Route... routes) {
+    public HttpServer(ActorSystem system, ActorMaterializer materializer, Route... routes) {
         this.system = system;
         this.materializer = materializer;
         this.routes = routes;
@@ -45,17 +45,11 @@ public class HttpServerNew extends ErrorHandlingDirectives {
         boundRoute = http.bindAndHandle(routeFlow, ConnectHttp.toHost(ipAddress, PORT), materializer).toCompletableFuture().get();
         LOG.debug("Bound port={}", PORT);
     }
-    private Route createRoute2() {
-        return route(
-                path("bundle.main.js", () ->
-                        get(() ->
-                                getFromResource("static/app/bundle.main.js"))));
-    }
 
     private Route createRoute() {
         Route indexHtml = get(() -> route(pathSingleSlash(() -> getFromResource("static/index.html"))));
         Route appJsx = get(() -> route(path("bundle.main.js", () -> getFromResource("static/app/bundle.main.js"))));
-        Route pages = get(() -> route(path("pages", () -> getFromResource("static/index.html"))));
+        Route pages = get(() -> route(pathPrefix("pages", () -> getFromResource("static/index.html"))));
 
         Route apis = route(
                 appJsx,

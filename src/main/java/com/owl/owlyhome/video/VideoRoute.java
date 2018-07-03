@@ -13,12 +13,16 @@ import akka.util.Timeout;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.owl.owlyhome.AudioOption;
+
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.concurrent.duration.Duration;
@@ -29,8 +33,8 @@ public class VideoRoute extends AllDirectives implements Supplier<Route> {
     private static final Logger LOG = LoggerFactory.getLogger(VideoRoute.class);
 
     private FiniteDuration DEFAULT_DURATION = Duration.apply(10, TimeUnit.SECONDS);
-    private String ROOT_FOLDER = "/mnt/usb";
-//    private String ROOT_FOLDER = "D:\\Download";
+    //    private String ROOT_FOLDER = "/mnt/usb";
+    private String ROOT_FOLDER = "/Users/dstoner/MercurialRepos/Other/owl-home/example-movs";
     private final ObjectMapper mapper;
     private final ActorRef videoActor;
 
@@ -118,7 +122,10 @@ public class VideoRoute extends AllDirectives implements Supplier<Route> {
         try {
             List<Video> files = walk(
                     ROOT_FOLDER,
-                    new ArrayList<>());
+                    new ArrayList<>())
+                    .stream()
+                    .sorted(Comparator.comparing(v -> v.name))
+                    .collect(Collectors.toList());
             return mapper.writeValueAsString(files);
         } catch (JsonProcessingException ex) {
             throw new RuntimeException(ex);

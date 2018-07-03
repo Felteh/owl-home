@@ -2,7 +2,7 @@ var path = require('path');
 var rootPath = path.join(__dirname, '../', '../');
 var config = module.exports = {
     entry: {
-        'app/bundle.main': './src/main/app/app.jsx',
+        'app/bundle.main': './src/main/app/App.jsx',
     },
     devtool: 'source-map',
     cache: true,
@@ -18,7 +18,7 @@ var config = module.exports = {
                 use: {
                     loader: 'babel-loader',
                     options: {
-                        presets: ['es2015', 'stage-2', 'env', 'react']
+                        presets: ['env', 'stage-2', 'react']
                     }
                 }
             },

@@ -1,6 +1,7 @@
 package com.owl.owlyhome.server;
 
 import static akka.event.Logging.InfoLevel;
+
 import akka.http.javadsl.model.HttpHeader;
 import akka.http.javadsl.model.HttpRequest;
 import akka.http.javadsl.model.HttpResponse;
@@ -11,9 +12,11 @@ import akka.http.javadsl.server.Rejection;
 import akka.http.javadsl.server.RejectionHandler;
 import akka.http.javadsl.server.directives.LogEntry;
 import akka.http.scaladsl.server.ValidationRejection;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,22 +29,22 @@ public class ErrorHandlingDirectives extends AllDirectives {
                 .newBuilder()
                 .handleNotFound(
                         extractUnmatchedPath(unmatchedPath
-                                -> extractRequest(
-                                        request -> {
-                                            LOG.warn("Rejected: Unmatched path Method={} Uri={} Headers={} UnmatchedUri={}", request.method().value(), request.getUri().toString(), request.getHeaders(), unmatchedPath);
-                                            return complete(StatusCodes.NOT_FOUND);
-                                        }
+                                        -> extractRequest(
+                                request -> {
+                                    LOG.warn("Rejected: Unmatched path UnmatchedUri={} Method={} Uri={} Headers={}", unmatchedPath, request.method().value(), request.getUri().toString(), request.getHeaders());
+                                    return complete(StatusCodes.NOT_FOUND);
+                                }
                                 )
                         )
                 )
                 .handle(ValidationRejection.class, rejection -> extractUnmatchedPath(unmatchedPath
                                 -> extractRequest(
-                                        request -> {
-                                            LOG.warn("ValidationRejection: ValidationError={} Unmatched path Method={} Uri={} Headers={} UnmatchedUri={}", rejection.message(), request.method().value(), request.getUri().toString(), request.getHeaders(), unmatchedPath);
-                                            return complete(StatusCodes.BAD_REQUEST);
-                                        }
-                                )
-                        ))
+                        request -> {
+                            LOG.warn("ValidationRejection: ValidationError={} Unmatched path UnmatchedUri={} Method={} Uri={} Headers={}", rejection.message(), unmatchedPath, request.method().value(), request.getUri().toString(), request.getHeaders());
+                            return complete(StatusCodes.BAD_REQUEST);
+                        }
+                        )
+                ))
                 .build();
     }
 
@@ -50,14 +53,14 @@ public class ErrorHandlingDirectives extends AllDirectives {
 
         return LogEntry.create(
                 "--> REQUEST {"
-                + request.method().name() + " : " + request.getUri().toString() + ", "
-                + headers
-                + "}\n"
-                + "<-- RESPONSE {"
-                + response.status() + " "
-                + "Content-Type:" + response.entity().getContentType().toString() + ", "
-                + "Content-Length: " + response.entity().getContentLengthOption().orElse(-1)
-                + "}",
+                        + request.method().name() + " : " + request.getUri().toString() + ", "
+                        + headers
+                        + "}\n"
+                        + "<-- RESPONSE {"
+                        + response.status() + " "
+                        + "Content-Type:" + response.entity().getContentType().toString() + ", "
+                        + "Content-Length: " + response.entity().getContentLengthOption().orElse(-1)
+                        + "}",
                 InfoLevel());
     }
 
@@ -66,10 +69,10 @@ public class ErrorHandlingDirectives extends AllDirectives {
 
         return LogEntry.create(
                 "Server has received a request\n"
-                + request.method().name() + " " + request.getUri().toString() + "\n"
-                + headers + "\n"
-                + "Server responded with a rejection\n"
-                + rejections.stream().map(Rejection::toString).collect(Collectors.joining("\n")),
+                        + request.method().name() + " " + request.getUri().toString() + "\n"
+                        + headers + "\n"
+                        + "Server responded with a rejection\n"
+                        + rejections.stream().map(Rejection::toString).collect(Collectors.joining("\n")),
                 InfoLevel());
     }
 
@@ -77,9 +80,9 @@ public class ErrorHandlingDirectives extends AllDirectives {
         return ExceptionHandler
                 .newBuilder()
                 .matchAny(throwable -> extractRequest(request -> {
-                    LOG.warn("Error on route: " + request.method().value() + " " + request.getUri().toString() + " " + throwable.getMessage(), throwable);
-                    return complete(StatusCodes.INTERNAL_SERVER_ERROR);
-                })
+                            LOG.warn("Error on route: " + request.method().value() + " " + request.getUri().toString() + " " + throwable.getMessage(), throwable);
+                            return complete(StatusCodes.INTERNAL_SERVER_ERROR);
+                        })
                 ).build();
     }
 
