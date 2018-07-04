@@ -25,7 +25,7 @@ public class Main {
     public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
         LOG.debug("KUPO!");
         // boot up server using the route as defined below
-        final ActorSystem<TypedVideoActor.VideoCommand> system = ActorSystem.create(mainBehavior, "ChatRoomDemo");
+        final ActorSystem<TypedVideoActor.VideoCommand> system = ActorSystem.create(mainBehavior, "kupo");
         akka.actor.ActorSystem untypedSystem = Adapter.toUntyped(system);
         final ActorMaterializer materializer = ActorMaterializer.create(untypedSystem);
 
