@@ -1,18 +1,21 @@
 package com.owl.owlyhome.video;
 
-import akka.actor.ActorRef;
-import akka.actor.ActorSystem;
+import akka.actor.typed.ActorSystem;
+import akka.actor.typed.javadsl.AskPattern;
 import akka.http.javadsl.marshallers.jackson.Jackson;
 import akka.http.javadsl.model.StatusCode;
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.AllDirectives;
 import akka.http.javadsl.server.PathMatchers;
 import akka.http.javadsl.server.Route;
-import akka.pattern.PatternsCS;
 import akka.util.Timeout;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.owl.owlyhome.AudioOption;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import scala.concurrent.duration.Duration;
+import scala.concurrent.duration.FiniteDuration;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -23,11 +26,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import scala.concurrent.duration.Duration;
-import scala.concurrent.duration.FiniteDuration;
-
 public class VideoRoute extends AllDirectives implements Supplier<Route> {
 
     private static final Logger LOG = LoggerFactory.getLogger(VideoRoute.class);
@@ -36,11 +34,11 @@ public class VideoRoute extends AllDirectives implements Supplier<Route> {
     //    private String ROOT_FOLDER = "/mnt/usb";
     private String ROOT_FOLDER = "/Users/dstoner/MercurialRepos/Other/owl-home/example-movs";
     private final ObjectMapper mapper;
-    private final ActorRef videoActor;
+    private final ActorSystem<TypedVideoActor.VideoCommand> system;
 
-    public VideoRoute(ActorSystem system, ObjectMapper mapper) {
+    public VideoRoute(ActorSystem<TypedVideoActor.VideoCommand> system, ObjectMapper mapper) {
         this.mapper = mapper;
-        videoActor = system.actorOf(VideoActor.props(), "VideoActor");
+        this.system = system;
     }
 
     @Override
@@ -79,7 +77,7 @@ public class VideoRoute extends AllDirectives implements Supplier<Route> {
         );
     }
 
-    private StatusCode resolveFutureToStatusCode(Object res) {
+    private StatusCode resolveFutureToStatusCode(TypedVideoActor.GenericResponse res) {
         try {
             LOG.debug("resolveFutureToStatusCode Result={}", res);
             if (VideoActor.SUCCESS.equals(res)) {
@@ -99,22 +97,44 @@ public class VideoRoute extends AllDirectives implements Supplier<Route> {
     }
 
     private CompletionStage<StatusCode> play(V1VideoPlay request) {
-        CompletionStage<Object> ask = PatternsCS.ask(videoActor, new Play(request.filename, AudioOption.fromRestApi(request.audio)), Timeout.apply(DEFAULT_DURATION));
+        CompletionStage<TypedVideoActor.GenericResponse> ask = AskPattern.ask(
+                system,
+                (sender) -> new TypedVideoActor.PlayVideo(sender, request.filename, AudioOption.fromRestApi(request.audio)),
+                Timeout.apply(DEFAULT_DURATION),
+                system.scheduler()
+        );
+
         return ask.thenApply(this::resolveFutureToStatusCode);
     }
 
     private CompletionStage<StatusCode> resume() {
-        CompletionStage<Object> ask = PatternsCS.ask(videoActor, VideoActor.RESUME, Timeout.apply(DEFAULT_DURATION));
+        CompletionStage<TypedVideoActor.GenericResponse> ask = AskPattern.ask(
+                system,
+                (sender) -> new TypedVideoActor.ResumeVideo(sender),
+                Timeout.apply(DEFAULT_DURATION),
+                system.scheduler()
+        );
+
         return ask.thenApply(this::resolveFutureToStatusCode);
     }
 
     private CompletionStage<StatusCode> pause() {
-        CompletionStage<Object> ask = PatternsCS.ask(videoActor, VideoActor.PAUSE, Timeout.apply(DEFAULT_DURATION));
+        CompletionStage<TypedVideoActor.GenericResponse> ask = AskPattern.ask(
+                system,
+                (sender) -> new TypedVideoActor.PauseVideo(sender),
+                Timeout.apply(DEFAULT_DURATION),
+                system.scheduler()
+        );
         return ask.thenApply(this::resolveFutureToStatusCode);
     }
 
     private CompletionStage<StatusCode> stop() {
-        CompletionStage<Object> ask = PatternsCS.ask(videoActor, VideoActor.STOP, Timeout.apply(DEFAULT_DURATION));
+        CompletionStage<TypedVideoActor.GenericResponse> ask = AskPattern.ask(
+                system,
+                (sender) -> new TypedVideoActor.StopVideo(sender),
+                Timeout.apply(DEFAULT_DURATION),
+                system.scheduler()
+        );
         return ask.thenApply(this::resolveFutureToStatusCode);
     }
 

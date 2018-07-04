@@ -11,6 +11,7 @@ import PlayArrow from "@material-ui/icons/es/PlayArrow";
 import Stop from "@material-ui/icons/es/Stop";
 import Pause from "@material-ui/icons/es/Pause";
 import IconButton from "@material-ui/core/es/IconButton/IconButton";
+import Paper from "@material-ui/core/es/Paper/Paper";
 
 class VideoPage extends React.Component {
     state = {
@@ -53,22 +54,24 @@ class VideoPage extends React.Component {
         return (
             <div>
                 <VideoToolbar/>
-                <List>
-                    {loading && <LinearProgress/>}
-                    {videos &&
-                    videos.map(
-                        function (v) {
-                            return (
-                                <VideoListItem
-                                    key={v.path}
-                                    video={v}
-                                    onError={_this.onError}
-                                />
-                            );
+                <Paper elevation={2} style={{marginTop:'16px'}}>
+                    <List>
+                        {loading && <LinearProgress/>}
+                        {videos &&
+                        videos.map(
+                            function (v) {
+                                return (
+                                    <VideoListItem
+                                        key={v.path}
+                                        video={v}
+                                        onError={_this.onError}
+                                    />
+                                );
+                            }
+                        )
                         }
-                    )
-                    }
-                </List>
+                    </List>
+                </Paper>
                 <Snackbar
                     open={errorOpen}
                     onClose={this.errorClose}
@@ -119,7 +122,7 @@ class VideoToolbar extends React.Component {
         const {errorOpen, errorMsg} = this.state;
 
         return (
-            <div>
+            <Paper elevation={2}>
                 <Grid container spacing={24} justify='space-around'>
                     <Grid item xs={4} style={{textAlign: 'center'}}>
                         <IconButton onClick={this.pause}>
@@ -143,7 +146,7 @@ class VideoToolbar extends React.Component {
                     onClose={this.errorClose}
                     autoHideDuration={2000}
                 />
-            </div>
+            </Paper>
         );
     }
 }
@@ -169,7 +172,7 @@ class VideoListItem extends React.Component {
             <ListItem button onClick={this.play}>
                 <ListItemText
                     primary={video.name}
-                    secondary={video.length+"mb"}/>
+                    secondary={video.length + "mb"}/>
             </ListItem>
         );
     }
