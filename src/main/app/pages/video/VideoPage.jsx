@@ -6,9 +6,11 @@ import List from "@material-ui/core/es/List/List";
 import LinearProgress from "@material-ui/core/es/LinearProgress/LinearProgress";
 import ListItem from "@material-ui/core/es/ListItem/ListItem";
 import ListItemText from "@material-ui/core/es/ListItemText/ListItemText";
-import ListItemSecondaryAction from "@material-ui/core/es/ListItemSecondaryAction/ListItemSecondaryAction";
-import Paper from "@material-ui/core/es/Paper/Paper";
-import Button from "@material-ui/core/es/Button/Button";
+import Grid from "@material-ui/core/es/Grid/Grid";
+import PlayArrow from "@material-ui/icons/es/PlayArrow";
+import Stop from "@material-ui/icons/es/Stop";
+import Pause from "@material-ui/icons/es/Pause";
+import IconButton from "@material-ui/core/es/IconButton/IconButton";
 
 class VideoPage extends React.Component {
     state = {
@@ -36,13 +38,22 @@ class VideoPage extends React.Component {
             });
     };
 
+    onError = (error) => {
+        this.setState({errorOpen: true, errorMsg: error.message});
+    };
+
+    errorClose = () => {
+        this.setState({errorOpen: false});
+    };
+
     render() {
         const {loading, videos, errorOpen, errorMsg} = this.state;
+
+        let _this = this;
         return (
             <div>
                 <VideoToolbar/>
                 <List>
-                    <ListSubheader>Videos</ListSubheader>
                     {loading && <LinearProgress/>}
                     {videos &&
                     videos.map(
@@ -51,6 +62,7 @@ class VideoPage extends React.Component {
                                 <VideoListItem
                                     key={v.path}
                                     video={v}
+                                    onError={_this.onError}
                                 />
                             );
                         }
@@ -59,6 +71,7 @@ class VideoPage extends React.Component {
                 </List>
                 <Snackbar
                     open={errorOpen}
+                    onClose={this.errorClose}
                     message={errorMsg}
                     autoHideDuration={2000}
                 />
@@ -97,25 +110,37 @@ class VideoToolbar extends React.Component {
         this.handleErrors(StopVideo());
     };
 
+
+    errorClose = () => {
+        this.setState({errorOpen: false});
+    };
+
     render() {
         const {errorOpen, errorMsg} = this.state;
 
         return (
             <div>
-                <Paper elevation={2}>
-                    <Button variant="outlined" label="Resume" onClick={this.resume}>
-                        Resume
-                    </Button>
-                    <Button variant="outlined" label="Resume" onClick={this.pause}>
-                        Pause
-                    </Button>
-                    <Button variant="outlined" label="Resume" onClick={this.stop}>
-                        Stop
-                    </Button>
-                </Paper>
+                <Grid container spacing={24} justify='space-around'>
+                    <Grid item xs={4} style={{textAlign: 'center'}}>
+                        <IconButton onClick={this.pause}>
+                            <Pause style={{width: '48px', height: '48px'}}/>
+                        </IconButton>
+                    </Grid>
+                    <Grid item xs={4} style={{textAlign: 'center'}}>
+                        <IconButton onClick={this.resume}>
+                            <PlayArrow style={{width: '48px', height: '48px'}}/>
+                        </IconButton>
+                    </Grid>
+                    <Grid item xs={4} style={{textAlign: 'center'}}>
+                        <IconButton onClick={this.stop}>
+                            <Stop style={{width: '48px', height: '48px'}}/>
+                        </IconButton>
+                    </Grid>
+                </Grid>
                 <Snackbar
                     open={errorOpen}
                     message={errorMsg}
+                    onClose={this.errorClose}
                     autoHideDuration={2000}
                 />
             </div>
@@ -131,6 +156,7 @@ class VideoListItem extends React.Component {
                 console.log(this.props.video);
             })
             .catch(error => {
+                this.props.onError(error);
                 console.log("ERROR");
                 console.log(error);
             });
@@ -142,8 +168,8 @@ class VideoListItem extends React.Component {
         return (
             <ListItem button onClick={this.play}>
                 <ListItemText
-                    primary={video.name + " " + video.length + "mb"}
-                    secondary={video.path}/>
+                    primary={video.name}
+                    secondary={video.length+"mb"}/>
             </ListItem>
         );
     }
